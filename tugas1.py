@@ -4,8 +4,12 @@ import sys
 header = "=" * 50
 nama_toko = "TOKO BUAH PAK AMBATUKAM"
 alamat_toko = "Jl. *******, No. ***"
-lebar_box = 200  # total width of the box
-
+lebar_box = 200 
+#kasir name
+kasir1 = "Brandon"
+kasir2 = "Steve"
+kasir3 = "Aliya"
+kasir4 = "Adit"
 # Menu buah-buahan, harganya, kode pembelian, dan stok
 list_item = [
     ("Daftar Buah", "Harga Buah", "Kode Pembelian", "Stok")
@@ -52,7 +56,8 @@ for buah, harga, kode, stok in menu_buah:
 
 # Cetak garis bawah
 print(f"+{garis_atas_bawah}+")
-
+print("\n")
+print(f"Nama kasir yang beroprasi: {kasir1}, {kasir2}, {kasir3}, dan {kasir4}")
 # Fungsi untuk mencari buah berdasarkan kode
 def buah_code(code):
     for buah in menu_buah:
@@ -90,6 +95,15 @@ def ans_input():
         else:
             print("Input yang anda masukkan invalid. Hanya dapat ketik [y/n].")
 
+# fungsi input nama kasir
+def kasir_input():
+    while True:
+        input_kasir = input("Masukkan Nama Kasir: ")
+        if input_kasir == kasir1 or kasir2 or kasir3 or kasir4:
+            return True
+        else:
+            print("nama kasir yang anda masukkan salah")
+        
 
 def process_transaksi():
     while True:
@@ -134,6 +148,7 @@ def process_transaksi():
 
 # Memulai transaksi
 if ans_input():
+    kasir_input()
     process_transaksi()
 
 # Cetak stok terbaru
