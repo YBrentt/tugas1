@@ -1,162 +1,205 @@
 import sys
+import colorama
+from colorama import Fore, Back, Style
+from typing import Tuple, List, Optional
+from dataclasses import dataclass
+from decimal import Decimal, ROUND_DOWN
 
-# Header dan informasi toko
-header = "=" * 50
-nama_toko = "TOKO BUAH PAK AMBATUKAM"
-alamat_toko = "Jl. *******, No. ***"
-lebar_box = 200 
-#kasir name
-kasir1 = "Brandon"
-kasir2 = "Steve"
-kasir3 = "Aliya"
-kasir4 = "Adit"
-# Menu buah-buahan, harganya, kode pembelian, dan stok
-list_item = [
-    ("Daftar Buah", "Harga Buah", "Kode Pembelian", "Stok")
-]
+@dataclass
+class DataBuah:
+    nama: str
+    harga: Decimal
+    kode: str
+    stok: float
 
-menu_buah = [
-    ("Apel", "Rp 30.000", "A001", "80kg"),
-    ("Pisang", "Rp 20.000", "A002", "80kg"),
-    ("Jeruk", "Rp 25.000", "A003", "80kg"),
-    ("Mangga", "Rp 35.000", "A004", "80kg"),
-    ("Anggur", "Rp 50.000", "A005", "80kg"),
-    ("Semangka", "Rp 15.000", "A006", "80kg"),
-    ("Alpukat", "Rp 30.000", "A007", "80kg"),
-    ("Salak", "Rp 20.000", "A008", "80kg"),
-    ("Jambu", "Rp 15.000", "A009", "80kg")
-]
+@dataclass
+class Transaksi:
+    nama_pembeli: str
+    buah: DataBuah
+    jumlah: float
+    total_harga: Decimal
+    diskon: Decimal
+    harga_akhir: Decimal
 
-# Fungsi untuk mengonversi stok "80kg" menjadi integer 80
-def ubah_ke_int(stok_str):
-    return float(''.join(filter(str.isdigit, stok_str)))
-
-# Membuat garis atas dan bawah
-garis_atas_bawah = "=" * (lebar_box - 2)
-
-# Cetak garis atas
-print(f"+{garis_atas_bawah}+")
-
-# Cetak header toko
-print(f"|{header.center(lebar_box - 2)}|")
-print(f"|{nama_toko.center(lebar_box - 2)}|")
-print(f"|{alamat_toko.center(lebar_box - 2)}|")
-print(f"|{header.center(lebar_box - 2)}|")
-
-# Cetak menu buah
-print(f"|{'MENU BUAH PER KG'.center(lebar_box - 2)}|")
-print(f"|{'=' * (lebar_box - 2)}|")
-for buah, harga, kode, stok in list_item:
-    print(f"| {buah.ljust(30)} {harga.center(90)} {kode.center(30)} {stok.rjust(43)} |")
+class TokoBuah:
+    def __init__(self):
+        self.nama_toko = "AMBATUFRUITS STORE"
+        self.alamat_toko = "Jl. Jomokerto, No. 69"
+        self.daftar_kasir = ["Brandon", "Steve", "Adit", "Aliya"]
+        self.lebar_tampilan = 200
+        self.batas_diskon = 20  # kg
+        self.persentase_diskon = 20  # %
+        
+        # Inisialisasi persediaan buah
+        self.persediaan_buah = [
+            DataBuah("Apel", Decimal('30000'), "A001", 80.0),
+            DataBuah("Pisang", Decimal('20000'), "A002", 80.0),
+            DataBuah("Jeruk", Decimal('25000'), "A003", 80.0),
+            DataBuah("Mangga", Decimal('35000'), "A004", 80.0),
+            DataBuah("Anggur", Decimal('50000'), "A005", 80.0),
+            DataBuah("Semangka", Decimal('15000'), "A006", 80.0),
+            DataBuah("Alpukat", Decimal('30000'), "A007", 80.0),
+            DataBuah("Salak", Decimal('20000'), "A008", 80.0),
+            DataBuah("Jambu", Decimal('15000'), "A009", 80.0)
+        ]
+        
+    def tampilkan_header(self) -> None:
+        """Menampilkan header toko dengan format yang rapi."""
+        pemisah = "=" * (self.lebar_tampilan - 2)
+        header = "=" * 50
+        
+        print(f"+{pemisah}+")
+        print(f"|{header.center(self.lebar_tampilan - 2)}|")
+        print(f"|{self.nama_toko.center(self.lebar_tampilan - 2)}|")
+        print(f"|{self.alamat_toko.center(self.lebar_tampilan - 2)}|")
+        print(f"|{header.center(self.lebar_tampilan - 2)}|")
+        
+    def tampilkan_persediaan(self) -> None:
+        """Menampilkan persediaan buah dalam bentuk tabel."""
+        pemisah = "=" * (self.lebar_tampilan - 2)
+        print(f"|{'DAFTAR BUAH PER KILOGRAM'.center(self.lebar_tampilan - 2)}|")
+        print(f"|{pemisah}|")
+        
+        # Header tabel
+        header = ("Nama Buah", "Harga Buah", "Kode Pembelian", "Stok")
+        print(f"| {header[0].ljust(30)} {header[1].center(90)} {header[2].center(30)} {header[3].rjust(43)} |")
+        print(f"|{pemisah}|")
+        
+        # Daftar buah
+        for buah in self.persediaan_buah:
+            print(f"| {buah.nama.ljust(30)} {'Rp {:,.0f}'.format(buah.harga).center(90)} "
+                  f"{buah.kode.center(30)} {f'{buah.stok:.1f}kg'.rjust(43)} |")
+        
+        print(f"+{pemisah}+")
+        
+    def cari_buah(self, kode: str) -> Optional[DataBuah]:
+        """Mencari buah berdasarkan kode."""
+        return next((buah for buah in self.persediaan_buah if buah.kode == kode), None)
     
-print(f"|{'=' * (lebar_box - 2)}|")
-
-for buah, harga, kode, stok in menu_buah:
-    print(f"| {buah.ljust(30)} {harga.center(90)} {kode.center(30)} {stok.rjust(43)} |")
-
-# Cetak garis bawah
-print(f"+{garis_atas_bawah}+")
-print("\n")
-print(f"Nama kasir yang beroprasi: {kasir1}, {kasir2}, {kasir3}, dan {kasir4}")
-# Fungsi untuk mencari buah berdasarkan kode
-def buah_code(code):
-    for buah in menu_buah:
-        if buah[2] == code:
-            return buah
-    return None
-
-# Fungsi untuk mencetak struk pembelian
-def cetak_struk(nama_pelanggan, buah, jumlah_beli, total_harga):
-    print("\n" + "=" * 40)
-    print(f"{'STRUK PEMBELIAN'.center(40)}")
-    print("=" * 40)
-    print(f"Nama Toko   : {nama_toko}")
-    print(f"Alamat Toko : {alamat_toko}")
-    print(f"Nama Pembeli: {nama_pelanggan}")
-    print("=" * 40)
-    print(f"Buah yang Dibeli: {buah[0]}")
-    print(f"Harga per kg   : {buah[1]}")
-    print(f"Jumlah Beli    : {jumlah_beli} kg")
-    print(f"Total Harga    : Rp {total_harga:,}")
-    print("=" * 40)
-    print("Terima kasih telah berbelanja di toko kami!")
-    print("=" * 40)
-    print("\n")
-
-
-# Fungsi transaksi
-def ans_input():
-    while True:
-        input_continue = str(input("Apakah anda ingin membeli buah di toko ini [y/n]: ")).lower()
-        if input_continue == 'y':
-            return True
-        elif input_continue == 'n':
-            sys.exit("Terima kasih telah mengunjungi toko kami!")
-        else:
-            print("Input yang anda masukkan invalid. Hanya dapat ketik [y/n].")
-
-# fungsi input nama kasir
-def kasir_input():
-    while True:
-        input_kasir = input("Masukkan Nama Kasir: ")
-        if input_kasir == kasir1 or kasir2 or kasir3 or kasir4:
-            return True
-        else:
-            print("nama kasir yang anda masukkan salah")
+    def proses_pembayaran(self, total_bayar: Decimal) -> Tuple[bool, Decimal]:
+        """Memproses pembayaran pelanggan dan menghitung kembalian."""
+        while True:
+            try:
+                uang_pembeli = Decimal(input(f"Total yang harus dibayar: Rp {total_bayar:,.2f}\nMasukkan jumlah uang: Rp "))
+                if uang_pembeli >= total_bayar:
+                    return True, uang_pembeli - total_bayar
+                print("Pembayaran kurang dari total belanja.")
+            except ValueError:
+                print("Masukkan nominal yang valid.")
+    
+    def cetak_struk(self, transaksi: Transaksi, pembayaran: Decimal, kembalian: Decimal) -> None:
+        """Mencetak struk belanja."""
+        print("\n" + "=" * 50)
+        print(f"{'STRUK PEMBELIAN'.center(50)}")
+        print("=" * 50)
+        print(f"Nama Toko    : {self.nama_toko}")
+        print(f"Alamat       : {self.alamat_toko}")
+        print(f"Nama Pembeli : {transaksi.nama_pembeli}")
+        print("=" * 50)
+        print(f"Buah         : {transaksi.buah.nama}")
+        print(f"Harga per kg : Rp {transaksi.buah.harga:,.2f}")
+        print(f"Jumlah Beli  : {transaksi.jumlah:.1f} kg")
+        print(f"Total Harga  : Rp {transaksi.total_harga:,.2f}")
+        if transaksi.diskon > 0:
+            print(f"Diskon {self.persentase_diskon}%  : Rp {transaksi.diskon:,.2f}")
+            print(f"Harga Akhir  : Rp {transaksi.harga_akhir:,.2f}")
+        print(f"Pembayaran   : Rp {pembayaran:,.2f}")
+        print(f"Kembalian    : Rp {kembalian:,.2f}")
+        print("=" * 50)
+        print("Terima kasih telah berbelanja di toko kami!")
+        print("=" * 50 + "\n")
+    
+    def proses_transaksi(self) -> Optional[Transaksi]:
+        """Memproses satu transaksi pembelian."""
+        nama_pembeli = input("Masukkan Nama Pembeli: ").capitalize()
         
-
-def process_transaksi():
-    while True:
-        nama_pelanggan = str(input("Masukkan Nama Pembeli: ")).capitalize()
-        code_barang = input("Masukkan Kode Buah: ").upper()
-        
-        # Cari buah berdasarkan kode
-        fruit = buah_code(code_barang)
-        
-        if fruit:
-            print(f"Anda memilih: {fruit[0]} ({fruit[1]})")
-            stok_buah = ubah_ke_int(fruit[3])
-            while True:
-                try:
-                    jumlah_beli_str = input(f"Masukkan Jumlah Pembelian (Stok tersedia {stok_buah}kg): ")
-                    jumlah_beli = float(jumlah_beli_str)  # Mengonversi jumlah pembelian ke integer
+        while True:
+            kode = input("Masukkan Kode Buah: ").upper()
+            buah = self.cari_buah(kode)
+            
+            if not buah:
+                print("Kode buah tidak ditemukan. Silakan coba lagi.")
+                continue
+                
+            print(f"Anda memilih: {buah.nama} (Rp {buah.harga:,.2f})")
+            
+            try:
+                jumlah = float(input(f"Masukkan Jumlah Pembelian (Stok tersedia {buah.stok:.1f}kg): "))
+                if jumlah <= 0:
+                    print("Jumlah pembelian harus lebih dari 0.")
+                    continue
+                if jumlah > buah.stok:
+                    print("Maaf, stok tidak mencukupi.")
+                    continue
                     
-                    if jumlah_beli > stok_buah:
-                        print("Maaf, stok tidak mencukupi.")
-                    else:
-                        total_harga = jumlah_beli * int(fruit[1].replace('Rp ', '').replace('.', ''))
-                        print(f"Total Harga untuk {jumlah_beli} kg {fruit[0]}: Rp {total_harga:,}")
-                        
-                        # Cetak struk pembelian
-                        cetak_struk(nama_pelanggan, fruit, jumlah_beli, total_harga)
-                        
-                        # Update stok
-                        stok_baru = stok_buah - jumlah_beli
-                        print(f"Stok {fruit[0]} setelah pembelian: {stok_baru}kg")
-                        
-                        # Perbarui menu_buah
-                        index = menu_buah.index(fruit)
-                        menu_buah[index] = (fruit[0], fruit[1], fruit[2], f"{stok_baru}kg")
-                        
-                        print("Terima kasih atas pembelian anda!")
-                        break  # Keluar dari loop setelah transaksi selesai
-                except ValueError:
-                    print("Input tidak valid. Silakan masukkan angka untuk jumlah pembelian.")
-            break
-        else:
-            print("Kode buah tidak ditemukan. Silakan masukkan kode yang valid.")
+                total_harga = Decimal(str(jumlah)) * buah.harga
+                diskon = Decimal('0')
+                harga_akhir = total_harga
+                
+                if jumlah >= self.batas_diskon:
+                    diskon = total_harga * Decimal(str(self.persentase_diskon / 100))
+                    harga_akhir = total_harga - diskon
+                
+                # Proses pembayaran
+                sukses, kembalian = self.proses_pembayaran(harga_akhir)
+                if not sukses:
+                    continue
+                
+                # Update stok
+                buah.stok -= jumlah
+                
+                transaksi = Transaksi(
+                    nama_pembeli=nama_pembeli,
+                    buah=buah,
+                    jumlah=jumlah,
+                    total_harga=total_harga,
+                    diskon=diskon,
+                    harga_akhir=harga_akhir
+                )
+                
+                self.cetak_struk(transaksi, harga_akhir + kembalian, kembalian)
+                return transaksi
+                
+            except ValueError:
+                print("Input tidak valid. Silakan masukkan angka yang valid.")
+    
+    def validasi_kasir(self) -> bool:
+        """Memvalidasi nama kasir."""
+        while True:
+            kasir = input("Masukkan nama kasir: ").capitalize()
+            if kasir in self.daftar_kasir:
+                print(f"Selamat datang, {kasir}!")
+                return True
+            print("Nama kasir tidak valid. Silakan coba lagi.")
+    
+    def jalankan_program(self):
+        """Program utama."""
+        self.tampilkan_header()
+        self.tampilkan_persediaan()
+        print(f"\nKasir yang bertugas: {', '.join(self.daftar_kasir[:-1])} dan {self.daftar_kasir[-1]}")
+        
+        if not self.validasi_kasir():
+            return
+        
+        while True:
+            lanjut_belanja = input("\nApakah anda ingin membeli buah di toko ini? [y/n]: ").lower()
+            
+            if lanjut_belanja == 'n':
+                print("\nTerima kasih telah mengunjungi toko kami!")
+                break
+            elif lanjut_belanja != 'y':
+                print("Input tidak valid. Silakan ketik 'y' atau 'n'.")
+                continue
+            
+            transaksi = self.proses_transaksi()
+            if not transaksi:
+                continue
+            
+            self.tampilkan_persediaan()  # Tampilkan persediaan terbaru
 
-# Memulai transaksi
-if ans_input():
-    kasir_input()
-    process_transaksi()
+def main():
+    toko = TokoBuah()
+    toko.jalankan_program()
 
-# Cetak stok terbaru
-print(f"+{garis_atas_bawah}+")
-print(f"|{'STOK TERBARU'.center(lebar_box - 2)}|")
-print(f"|{'=' * (lebar_box - 2)}|")
-
-for buah, harga, kode, stok in menu_buah:
-    print(f"| {buah.ljust(30)} {harga.center(90)} {kode.center(30)} {stok.rjust(43)} |")
-
-print(f"+{garis_atas_bawah}+")
+if __name__ == "__main__":
+    main()
