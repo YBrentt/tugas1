@@ -1,0 +1,63 @@
+def buka_apk_ojol():
+    print("Aplikasi ojol dibuka.")
+
+def aktifkan_gps():
+    print("GPS diaktifkan.")
+
+def input_lokasi_penjemputan():
+    lokasi_penjemputan = input("Masukkan lokasi penjemputan: ")
+    return lokasi_penjemputan
+
+def input_lokasi_tujuan():
+    lokasi_tujuan = input("Masukkan lokasi tujuan: ")
+    return lokasi_tujuan
+
+def pilih_metode_pembayaran():
+    # Dalam kasus ini, kita hanya akan menggunakan pembayaran cash
+    print("Metode pembayaran yang dipilih: Cash")
+    return "Cash"
+
+def pesan_dan_tunggu_ojol():
+    print("Pesanan ojol sedang diproses...")
+    print("Tunggu hingga ojol tiba...")
+    # Simulasi waktu tunggu
+    import time
+    time.sleep(2)  # Tunggu selama 2 detik untuk simulasi
+
+def menumpang_ojol():
+    print("Anda telah menumpang ojol.")
+
+def mengendarai_ojol():
+    print("Mengendarai ojol menuju tujuan...")
+    # Simulasi perjalanan
+    import time
+    time.sleep(2)  # Tunggu selama 2 detik untuk simulasi
+
+def turun():
+    print("Anda telah turun dari ojol.")
+
+def membayar_layanan_ojol():
+    print("Pembayaran layanan ojol dilakukan dengan cash.")
+
+# Program utama
+def main():
+    buka_apk_ojol()
+    aktifkan_gps()
+    
+    lokasi_penjemputan = input_lokasi_penjemputan()
+    lokasi_tujuan = input_lokasi_tujuan()
+    
+    metode_pembayaran = pilih_metode_pembayaran()
+  
+    pesan_dan_tunggu_ojol()
+    
+    menumpang_ojol()
+    
+    mengendarai_ojol()
+    
+    turun()
+    
+    membayar_layanan_ojol()
+if _name_ == "_main_":
+    main()
+
